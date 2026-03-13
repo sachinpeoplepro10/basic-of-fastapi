@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
-from app.models import Student
-from app.schemas import StudentCreate
+from app.model.student import Student
+from app.schema.student import StudentCreate
 
 # CREATE
 def create_student(db: Session, student: StudentCreate):
@@ -35,3 +35,7 @@ def delete_student(db: Session, student_id: int):
         db.delete(student)
         db.commit()
     return student
+
+
+
+

@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
-from app.models import Employee as EmployeeModel
-from app.schemas import EmployeeCreate
+from app.model.employee import Employee as EmployeeModel
+from app.schema.employee import EmployeeCreate,Employee
 
 # CREATE
 def create_employee(db:Session,Employee_detail: EmployeeCreate):
