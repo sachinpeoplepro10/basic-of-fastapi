@@ -3,23 +3,28 @@ from app.model.mark import Marks
 from app.schema.mark import MarksCreate
 
 
-
-def create_marks(db: Session, marks: MarksCreate, student_id: int):
-    db_marks = Marks(**marks.dict(), student_id=student_id)
-    db.add(db_marks)
+def create_marks(db: Session, marks: MarksCreate):
+    new_marks = Marks(**marks.dict())
+    db.add(new_marks)
     db.commit()
-    db.refresh(db_marks)
-    return db_marks
+    db.refresh(new_marks)
+    return new_marks
 
-def get_marks(db: Session, skip: int = 0, limit: int = 10):
-    return db.query(Marks).offset(skip).limit(limit).all()
 
-def get_marks_by_student(db: Session, student_id: int):
-    return db.query(Marks).filter(Marks.student_id == student_id).all()
+def get_marks(db: Session):
+    return db.query(Marks).all()
 
-def delete_marks(db: Session, marks_id: int):
-    marks = db.query(Marks).filter(Marks.id == marks_id).first()
-    if marks:
-        db.delete(marks)
-        db.commit()
+def update_marks(db: Session, mark_id: int, data: dict):
+
+    marks = db.query(Marks).filter(Marks.id == mark_id).first()
+
+    if not marks:
+        return {"message": "Marks record not found"}
+
+    for key, value in data.items():
+        setattr(marks, key, value)
+
+    db.commit()
+    db.refresh(marks)
+
     return marks

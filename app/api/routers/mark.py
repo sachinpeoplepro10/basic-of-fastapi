@@ -1,13 +1,13 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from app.db.session import SessionLocal
-# from app.db.session import get_db
-from app.schema.mark import MarksCreate, MarksResponse
-from app.crud import mark as crud_mark
+from app.crud import mark as marks_crud
+from app.schema.mark import MarksCreate
+from app.schema.marks_update import MarksUpdate
 
-router = APIRouter(prefix="/mark",tags=["mark"])
+router = APIRouter(prefix="/marks", tags=["Marks"])
 
-# Dependency to get DB session
+
 def get_db():
     db = SessionLocal()
     try:
@@ -15,21 +15,24 @@ def get_db():
     finally:
         db.close()
 
-@router.post("/", response_model=MarksResponse)
-def create_marks(marks: MarksCreate, student_id: int, db: Session = Depends(get_db)):
-    return crud_mark.create_marks(db, marks, student_id)
 
-@router.get("/marks/", response_model=list[MarksResponse])
-def read_marks(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
-    return crud_mark.get_marks(db, skip=skip, limit=limit)
+@router.post("/")
+def create(marks: MarksCreate, db: Session = Depends(get_db)):
+    return marks_crud.create_marks(db, marks)
 
-@router.get("/students/{student_id}/marks/", response_model=list[MarksResponse])
-def read_marks_by_student(student_id: int, db: Session = Depends(get_db)):
-    return crud_mark.get_marks_by_student(db, student_id)
 
-@router.delete("/marks/{marks_id}")
-def delete_marks(marks_id: int, db: Session = Depends(get_db)):
-    marks = crud_mark.delete_marks(db, marks_id)
-    if not marks:
-        raise HTTPException(status_code=404, detail="Marks not found")
-    return {"detail": "Marks deleted successfully"}
+@router.get("/")
+def get_all(db: Session = Depends(get_db)):
+    return marks_crud.get_marks(db)
+
+@router.put("/marks/{student_id}")
+def update_marks(
+    student_id: int,
+    data: MarksUpdate,
+    db: Session = Depends(get_db)
+):
+    return marks_crud.update_marks(
+        db,
+        student_id,
+        data.dict(exclude_unset=True)
+    )

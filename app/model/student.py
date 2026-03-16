@@ -1,15 +1,16 @@
-from sqlalchemy import Column, Integer, String, ForeignKey
+from sqlalchemy import Column, Integer, String
 from sqlalchemy.orm import relationship
-from app.db.session import Base 
+from app.db.session import Base
 
 class Student(Base):
     __tablename__ = "students"
 
-    id = Column(Integer, primary_key=True, index=True)
-    firstname = Column(String(50))
-    lastname = Column(String(50))
+    id = Column(Integer, primary_key=True)
+    firstname = Column(String)
+    lastname = Column(String)
     age = Column(Integer)
-    grade = Column(String(10))
-    email = Column(String(100))
-    mark = relationship("Marks", back_populates="student")
+    grade = Column(String)
+    email = Column(String, unique=True, index=True)
     
+
+    marks = relationship("Marks", back_populates="student")

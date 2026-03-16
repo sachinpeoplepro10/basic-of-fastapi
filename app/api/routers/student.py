@@ -1,12 +1,13 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from app.db.session import SessionLocal
-from app.schema.student import StudentCreate, StudentResponse
-from app.crud import student as crud_student
+from app.crud import student as student_crud
+from app.schema.student import StudentCreate
+from app.schema.student_update import StudentUpdate
 
-router = APIRouter(prefix="/students", tags=["students"])
+router = APIRouter(prefix="/students", tags=["Students"])
 
-# Dependency to get DB session
+
 def get_db():
     db = SessionLocal()
     try:
@@ -14,36 +15,24 @@ def get_db():
     finally:
         db.close()
 
-# Create student
-@router.post("/", response_model=StudentResponse)
-def create_student(student: StudentCreate, db: Session = Depends(get_db)):
-    return crud_student.create_student(db, student)
 
-# Read all students
-@router.get("/", response_model=list[StudentResponse])
-def read_students(db: Session = Depends(get_db)):
-    return crud_student.get_students(db)
+@router.post("/")
+def create(student: StudentCreate, db: Session = Depends(get_db)):
+    return student_crud.create_student(db, student)
 
-# Read one student
-@router.get("/{id}", response_model=StudentResponse)
-def read_student(id: int, db: Session = Depends(get_db)):
-    student = crud_student.get_student(db, id)
-    if not student:
-        raise HTTPException(status_code=404, detail="Student not found")
-    return student
 
-# Update student
-@router.put("/{id}", response_model=StudentResponse)
-def update_student(id: int, student_update: StudentCreate, db: Session = Depends(get_db)):
-    student = crud_student.update_student(db, id, student_update)
-    if not student:
-        raise HTTPException(status_code=404, detail="Student not found")
-    return student
+@router.get("/")
+def get_all(db: Session = Depends(get_db)):
+    return student_crud.get_students(db)
 
-# Delete student
-@router.delete("/{id}")
-def delete_student(id: int, db: Session = Depends(get_db)):
-    student = crud_student.delete_student(db, id)
-    if not student:
-        raise HTTPException(status_code=404, detail="Student not found")
-    return {"status": "deleted successfully"}
+@router.put("/students/{student_id}")
+def update_student(
+    student_id: int,
+    data: StudentUpdate,
+    db: Session = Depends(get_db)
+):
+    return student_crud.update_student(
+        db,
+        student_id,
+        data.dict(exclude_unset=True)
+    )

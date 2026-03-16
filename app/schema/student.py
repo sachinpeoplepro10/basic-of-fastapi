@@ -1,17 +1,15 @@
 from pydantic import BaseModel
 
-class StudentBase(BaseModel):
+class StudentCreate(BaseModel):
     firstname: str
     lastname: str
     age: int
     grade: str
     email: str
 
-class StudentCreate(StudentBase):
-    pass
 
-class StudentResponse(StudentBase):
+class StudentResponse(StudentCreate):
     id: int
 
     class Config:
-        from_attributes = True   # allows reading SQLAlchemy objects directly
+        from_attributes = True
