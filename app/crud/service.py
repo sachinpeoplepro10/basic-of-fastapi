@@ -55,5 +55,3 @@ def subject_average(db: Session):
         .all()
     )
 
-
-

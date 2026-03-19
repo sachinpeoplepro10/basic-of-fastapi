@@ -3,7 +3,7 @@ from pydantic import BaseModel
 class MarksCreate(BaseModel):
     subject: str
     score: int
-    student_id: int
+    student_id: int         
 
 
 class MarksResponse(MarksCreate):

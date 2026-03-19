@@ -25,7 +25,7 @@ def create(student: StudentCreate, db: Session = Depends(get_db)):
 def get_all(db: Session = Depends(get_db)):
     return student_crud.get_students(db)
 
-@router.put("/students/{student_id}")
+@router.put("/{student_id}")
 def update_student(
     student_id: int,
     data: StudentUpdate,

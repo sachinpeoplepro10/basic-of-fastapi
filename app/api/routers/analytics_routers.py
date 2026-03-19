@@ -43,6 +43,32 @@ def highest_score(db: Session = Depends(get_db)):
 def lowest_score(db: Session = Depends(get_db)):
     return analytics_services.lowest_score_by_subject(db)
 
+
+# Rank students
+@router.get("/rank-students")
+def rank_students(db: Session = Depends(get_db)):
+    return analytics_services.rank_students(db)
+
+# Topper in each subject
+@router.get("/topper-per-subject")
+def topper_subject(db: Session = Depends(get_db)):
+    return analytics_services.topper_per_subject(db)
+
+# Above average students
+@router.get("/above-average-students")
+def above_avg(db: Session = Depends(get_db)):
+    return analytics_services.above_average_students(db)
+
+# Failed students
+@router.get("/failed-students")
+def failed_students(db: Session = Depends(get_db)):
+    return analytics_services.failed_students(db)
+
+# Most consistent student
+@router.get("/most-consistent-student")
+def consistent(db: Session = Depends(get_db)):
+    return analytics_services.most_consistent_student(db)
+
 # GET - Single Student
 @router.get("/{student_id}")
 def get_student(student_id: int, db: Session = Depends(get_db)):

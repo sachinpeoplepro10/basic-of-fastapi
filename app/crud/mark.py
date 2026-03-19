@@ -1,6 +1,10 @@
+from typing import List
 from sqlalchemy.orm import Session
 from app.model.mark import Marks
+from app.model.student import Student
 from app.schema.mark import MarksCreate
+from app.schema.marks_update import MarksUpdate
+from app.schema.marksbulkupdate import MarksBulkUpdate
 
 
 def create_marks(db: Session, marks: MarksCreate):
@@ -14,9 +18,9 @@ def create_marks(db: Session, marks: MarksCreate):
 def get_marks(db: Session):
     return db.query(Marks).all()
 
-def update_marks(db: Session, mark_id: int, data: dict):
+def update_marks(db: Session, student_id: int, data: dict):
 
-    marks = db.query(Marks).filter(Marks.id == mark_id).first()
+    marks = db.query(Marks).filter(Marks.student_id == student_id).first()
 
     if not marks:
         return {"message": "Marks record not found"}
@@ -28,3 +32,34 @@ def update_marks(db: Session, mark_id: int, data: dict):
     db.refresh(marks)
 
     return marks
+
+from sqlalchemy import func
+
+
+
+def update_student_and_marks(db: Session, data: MarksBulkUpdate):
+
+    for item in data.marks:
+
+        mark = db.query(Marks).filter(
+            Marks.student_id == data.student_id,
+            func.lower(Marks.subject) == item.subject.value.lower()
+        ).first()
+
+        if mark:
+            # UPDATE
+            mark.score = item.score
+        else:
+            # INSERT
+            db.add(Marks(
+                student_id=data.student_id,
+                subject=item.subject.value,
+                score=item.score
+            ))
+
+    db.commit()
+
+    return {
+        "student_id": data.student_id,
+        "message": "All subjects updated successfully"
+    }
