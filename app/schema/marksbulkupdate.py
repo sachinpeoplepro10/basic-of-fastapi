@@ -1,5 +1,6 @@
 from pydantic import BaseModel, Field
 from typing import List
+from app.schema.enums import SubjectEnum
 
 class MarksUpdateItem(BaseModel):
     subject: SubjectEnum
@@ -9,8 +10,8 @@ class MarksBulkUpdate(BaseModel):
     student_id: int
     marks: List[MarksUpdateItem]
 
-    class Config:
-        schema_extra = {
+    model_config = {
+        "json_schema_extra": {
             "example": {
                 "student_id": 1,
                 "marks": [
@@ -20,3 +21,4 @@ class MarksBulkUpdate(BaseModel):
                 ]
             }
         }
+    }

@@ -1,6 +1,6 @@
 from enum import Enum
 
 class SubjectEnum(str, Enum):
-    MATH = "Math"
+    MATH = "Mathematics"
     ENGLISH = "English"
-    SCIENCE = "Science"
+    SCIENCE = "DBMS"
