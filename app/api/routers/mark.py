@@ -4,7 +4,6 @@ from app.db.session import SessionLocal
 from app.crud import mark as marks_crud
 from app.schema.mark import MarksCreate
 from app.schema.marks_update import MarksUpdate
-from app.crud.mark import update_student_and_marks
 from app.schema.marksbulkupdate import MarksBulkUpdate
 
 router = APIRouter(prefix="/marks", tags=["Marks"])
@@ -33,9 +32,9 @@ def bulk_update_marks(
     data: MarksBulkUpdate,
     db: Session = Depends(get_db)
 ):
-    return update_student_and_marks(db, data)
+    return marks_crud.update_student_and_marks(db, data)
 
-@router.put("/{student_id}")
+@router.put("/students/{student_id}")
 def update_mark(
     student_id: int,
     data: MarksUpdate,   # ya dict bhi le sakte ho

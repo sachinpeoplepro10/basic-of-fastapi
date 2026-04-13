@@ -1,11 +1,12 @@
 from typing import List
+from fastapi import HTTPException
 from sqlalchemy.orm import Session
 from app.model.mark import Marks
 from app.model.student import Student
 from app.schema.mark import MarksCreate
 from app.schema.marks_update import MarksUpdate
 from app.schema.marksbulkupdate import MarksBulkUpdate
-
+from sqlalchemy import func
 
 def create_marks(db: Session, marks: MarksCreate):
     new_marks = Marks(**marks.dict())
@@ -33,12 +34,19 @@ def update_marks(db: Session, student_id: int, data: dict):
 
     return marks
 
-from sqlalchemy import func
-
-
 
 def update_student_and_marks(db: Session, data: MarksBulkUpdate):
 
+    # 🔍 1. Validate student
+    student = db.query(Student).filter(Student.id == data.student_id).first()
+
+    if not student:
+        raise HTTPException(status_code=404, detail="Student not found")
+
+    # ✏️ 2. Update name
+    student.name = data.name
+
+    # 🔁 3. Update / Insert marks (your logic kept same)
     for item in data.marks:
 
         mark = db.query(Marks).filter(
@@ -61,5 +69,6 @@ def update_student_and_marks(db: Session, data: MarksBulkUpdate):
 
     return {
         "student_id": data.student_id,
-        "message": "All subjects updated successfully"
+        "name": student.name,
+        "message": "Student and marks updated successfully"
     }
